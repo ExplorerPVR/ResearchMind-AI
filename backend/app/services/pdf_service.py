@@ -1,24 +1,50 @@
+import uuid
+import shutil
+from pathlib import Path
+
 import fitz
+from fastapi import UploadFile
+
+from app.services.chunk_service import ChunkService
+from app.services.embedding_service import EmbeddingService
+
+UPLOAD_DIR = Path("app/uploads")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class PDFService:
 
     @staticmethod
-    def extract_text(pdf_path: str):
+    async def save_pdf(file: UploadFile):
 
-        document = fitz.open(pdf_path)
+        filename = f"{uuid.uuid4().hex}.pdf"
+        file_path = UPLOAD_DIR / filename
+
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        pdf = fitz.open(file_path)
+
+        page_count = len(pdf)
 
         text = ""
 
-        for page in document:
+        for page in pdf:
             text += page.get_text()
 
-        page_count = document.page_count
+        pdf.close()
 
-        document.close()
+        chunks = ChunkService.create_chunks(text)
+
+        ids = EmbeddingService.store_document(
+            chunks,
+            file.filename
+        )
 
         return {
-            "text": text,
-            "page_count": page_count,
-            "character_count": len(text)
+            "stored_name": filename,
+            "pages": page_count,
+            "characters": len(text),
+            "chunks": len(chunks),
+            "vector_ids": len(ids),
         }

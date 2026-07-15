@@ -1,6 +1,5 @@
 from fastapi import UploadFile
 
-from app.services.upload_service import UploadService
 from app.services.pdf_service import PDFService
 
 
@@ -9,11 +8,14 @@ class DocumentService:
     @staticmethod
     async def upload_document(file: UploadFile):
 
-        upload_result = await UploadService.save_file(file)
-
-        pdf_result = PDFService.extract_text(upload_result["path"])
+        pdf_result = await PDFService.save_pdf(file)
 
         return {
-            **upload_result,
-            **pdf_result
+            "filename": file.filename,
+            "stored_name": pdf_result["stored_name"],
+            "size": file.size,
+            "pages": pdf_result["pages"],
+            "characters": pdf_result["characters"],
+            "chunks": pdf_result["chunks"],
+            "vector_ids": pdf_result["vector_ids"],
         }
