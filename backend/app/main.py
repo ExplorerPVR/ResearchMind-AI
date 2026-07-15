@@ -6,6 +6,7 @@ from app.core.logger import logger
 
 from app.api.routes.health import router as health_router
 from app.api.routes.test import router as test_router
+from app.api.routes.documents import router as document_router
 
 
 app = FastAPI(
@@ -36,6 +37,7 @@ app.add_middleware(
 
 app.include_router(health_router)
 app.include_router(test_router)
+app.include_router(document_router)
 
 # --------------------------
 # Root
