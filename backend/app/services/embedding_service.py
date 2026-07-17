@@ -14,24 +14,32 @@ class EmbeddingService:
     )
 
     @classmethod
-    def store_document(cls, chunks: list[str], filename: str):
+    def store_document(cls, page_chunks: list, filename: str):
 
         ids = []
-        vectors = cls.embeddings.embed_documents(chunks)
 
-        for chunk, vector in zip(chunks, vectors):
+        # Extract text from each chunk
+        texts = [item["text"] for item in page_chunks]
+
+        # Generate embeddings
+        vectors = cls.embeddings.embed_documents(texts)
+
+        # Store in ChromaDB
+        for item, vector in zip(page_chunks, vectors):
 
             chunk_id = str(uuid.uuid4())
 
             collection.add(
                 ids=[chunk_id],
                 embeddings=[vector],
-                documents=[chunk],
+                documents=[item["text"]],
                 metadatas=[
                     {
-                        "filename": filename
+                        "filename": filename,
+                        "page": item["page"],
+                        "document": filename,
                     }
-                ],
+                ]
             )
 
             ids.append(chunk_id)
