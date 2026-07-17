@@ -2,6 +2,7 @@ from fastapi import APIRouter, File, UploadFile
 
 from app.schemas.document import DocumentResponse
 from app.services.document_service import DocumentService
+from app.services.library_service import LibraryService
 
 router = APIRouter(
     prefix="/documents",
@@ -9,6 +10,9 @@ router = APIRouter(
 )
 
 
+# -----------------------------
+# Upload PDF
+# -----------------------------
 @router.post("/upload", response_model=DocumentResponse)
 async def upload_document(file: UploadFile = File(...)):
 
@@ -25,3 +29,22 @@ async def upload_document(file: UploadFile = File(...)):
         vectors=result["vector_ids"],
         message="PDF uploaded, indexed and ready for AI."
     )
+    
+    
+# -----------------------------
+# Delete Documents
+# -----------------------------  
+@router.delete("/{filename}")
+async def delete_document(filename: str):
+
+    return LibraryService.delete_document(filename) 
+
+# -----------------------------
+# Get All Uploaded Documents
+# -----------------------------
+@router.get("")
+async def get_documents():
+
+    return {
+        "documents": LibraryService.get_documents()
+    }
