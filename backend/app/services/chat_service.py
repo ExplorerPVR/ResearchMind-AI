@@ -8,7 +8,7 @@ class ChatService:
     @staticmethod
     async def chat(session_id: str, question: str):
 
-        # Get previous conversation
+        # Retrieve previous conversation
         history = MemoryService.get_history(session_id)
 
         # Retrieve relevant chunks
@@ -19,36 +19,36 @@ class ChatService:
             chunk["text"] for chunk in chunks
         )
 
-        # Generate answer
+        # Generate AI answer
         answer = await GeminiService.generate_answer(
             question=question,
             context=context,
-            history=history
+            history=history,
         )
 
-        # Save conversation
+        # Save user message
         MemoryService.add_message(
             session_id=session_id,
             role="user",
-            message=question
+            message=question,
         )
 
+        # Save assistant response
         MemoryService.add_message(
             session_id=session_id,
             role="assistant",
-            message=answer
+            message=answer,
         )
 
-        # Remove duplicate citations
-        sources = list(dict.fromkeys(
-            f'{chunk["filename"]} (Page {chunk["page"]})'
-            for chunk in chunks
-        ))
+        # Remove duplicate sources while preserving order
+        sources = list(
+            dict.fromkeys(
+                f'{chunk["filename"]} (Page {chunk["page"]})'
+                for chunk in chunks
+            )
+        )
 
         return {
             "answer": answer,
-            "sources": [
-                f'{chunk["filename"]} (Page {chunk["page"]})'
-                for chunk in chunks
-            ]
+            "sources": sources,
         }

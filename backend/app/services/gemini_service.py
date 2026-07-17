@@ -1,14 +1,13 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
-
 from app.core.config import settings
 
 
 class GeminiService:
 
     llm = ChatGoogleGenerativeAI(
-        model="gemini-3.5-flash",
+        model=settings.MODEL_NAME,
         google_api_key=settings.GOOGLE_API_KEY,
-        temperature=0.2,
+        temperature=settings.TEMPERATURE,
     )
 
     @classmethod
@@ -58,10 +57,20 @@ Instructions:
 Answer:
 """
 
-        response = await cls.llm.ainvoke(prompt)
+        try:
+            response = await cls.llm.ainvoke(prompt)
+
+        except Exception as e:
+            print("Gemini Error:", e)
+
+            return (
+                "ResearchMind AI is temporarily unavailable. "
+                "Please try again later."
+            )
 
         content = response.content
 
+        # Handle Gemini returning multiple content blocks
         if isinstance(content, list):
 
             texts = []
