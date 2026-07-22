@@ -167,31 +167,80 @@ export default function CitationPage() {
 
   return (
 
-    <div className="max-w-6xl mx-auto space-y-8">
+  <div className="max-w-6xl mx-auto space-y-8">
 
-      <h1 className="text-3xl font-bold">
+    {/* Hero Header */}
 
-        📚 Citation Generator
+    <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 dark:from-blue-700 dark:via-indigo-700 dark:to-cyan-600 p-10 shadow-2xl mb-8">
 
-      </h1>
+      <div className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-cyan-300/20 blur-3xl"></div>
 
-      {documents.length === 0 ? (
+      <div className="absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-indigo-300/20 blur-3xl"></div>
 
-        <div className="rounded-xl border bg-card p-10 text-center">
+      <div className="relative flex items-center justify-between">
 
-          No research papers found.
+        <div>
 
-          <br />
+          <h1 className="text-4xl font-extrabold text-white">
 
-          Upload a PDF first.
+            📚 Citation Generator
+
+          </h1>
+
+          <p className="mt-3 text-lg text-blue-100 max-w-2xl">
+
+            Instantly generate professional citations in APA, IEEE, MLA,
+            Chicago, Harvard and BibTeX formats.
+
+          </p>
 
         </div>
 
-      ) : (
+        <div className="hidden lg:flex">
 
-        <div className="rounded-xl border bg-card shadow p-6">
+          <div className="rounded-2xl border border-white/20 bg-white/15 backdrop-blur-md p-6">
 
-          <label className="font-semibold">
+            <span className="text-6xl">
+
+              📚
+
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    {documents.length === 0 ? (
+
+      <div className="rounded-2xl border bg-card p-12 shadow text-center">
+
+        <h2 className="text-xl font-semibold mb-3">
+
+          No Research Papers Found
+
+        </h2>
+
+        <p className="text-muted-foreground">
+
+          Upload a PDF first to generate citations.
+
+        </p>
+
+      </div>
+
+    ) : (
+
+      <div className="rounded-2xl border bg-card shadow p-8 space-y-8">
+
+        {/* Paper Selection */}
+
+        <div>
+
+          <label className="block text-sm font-semibold mb-3">
 
             Select Research Paper
 
@@ -199,14 +248,13 @@ export default function CitationPage() {
 
           <select
 
-            className="w-full mt-3 rounded-lg border p-3"
-
             value={selectedFile}
 
             disabled={loading}
 
             onChange={(e)=>setSelectedFile(e.target.value)}
 
+            className="rounded-3xl border border-border bg-card/90 backdrop-blur-xl shadow-xl p-8"
           >
 
             <option value="">
@@ -233,13 +281,19 @@ export default function CitationPage() {
 
           </select>
 
+        </div>
+
+        {/* Generate Button */}
+
+        <div>
+
           <button
 
             onClick={generateCitation}
 
             disabled={loading}
 
-            className="mt-5 rounded-lg bg-primary text-primary-foreground px-6 py-3 disabled:opacity-60"
+            className="rounded-3xl border border-border bg-card/90 backdrop-blur-xl shadow-xl p-6"
 
           >
 
@@ -253,50 +307,89 @@ export default function CitationPage() {
 
         </div>
 
-      )}
+      </div>
 
-      {(citation.apa ||
-        citation.ieee ||
-        citation.mla ||
-        citation.chicago ||
-        citation.harvard ||
-        citation.bibtex) && (
+    )}
 
-        <div className="space-y-6">
+    {(
 
-          {citationFormats.map((item)=>(
+      citation.apa ||
 
-            <div
+      citation.ieee ||
 
-              key={item.title}
+      citation.mla ||
 
-              className="rounded-xl border bg-card shadow p-5"
+      citation.chicago ||
 
-            >
+      citation.harvard ||
 
-              <div className="flex justify-between items-center">
+      citation.bibtex
 
-                <h2 className="text-xl font-bold">
+    ) && (
 
-                  {item.title}
+      <div className="space-y-6">
 
-                </h2>
+        {citationFormats.map((item)=>(
 
-                <button
+          <div
 
-                  onClick={()=>copy(item.value)}
+            key={item.title}
 
-                  className="rounded-lg bg-primary text-primary-foreground px-4 py-2"
+            className="rounded-2xl border bg-card shadow"
 
-                >
+          >
 
-                  Copy
+            <div className="
 
-                </button>
+              flex
 
-              </div>
+              items-center
 
-              <pre className="mt-4 whitespace-pre-wrap break-words text-muted-foreground">
+              justify-between
+
+              border-b
+
+              px-6
+
+              py-4
+
+            ">
+
+              <h2 className="text-xl font-bold">
+
+                {item.title}
+
+              </h2>
+
+              <button
+
+                onClick={()=>copy(item.value)}
+
+                className="rounded-xl bg-primary px-5 py-2.5 text-primary-foreground shadow transition hover:opacity-90"
+
+              >
+
+                Copy
+
+              </button>
+
+            </div>
+
+            <div className="p-6">
+
+              <pre className="
+
+                whitespace-pre-wrap
+
+                break-words
+
+                text-muted-foreground
+
+                leading-7
+
+                font-sans
+
+              ">
 
                 {item.value || "Not Available"}
 
@@ -304,14 +397,13 @@ export default function CitationPage() {
 
             </div>
 
-          ))}
+          </div>
 
-        </div>
+        ))}
 
-      )}
+      </div>
 
+          )}
     </div>
-
   );
-
 }

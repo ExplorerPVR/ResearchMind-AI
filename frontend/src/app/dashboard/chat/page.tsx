@@ -37,7 +37,13 @@ export default function ChatPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
 
-    createChat();
+    async function init() {
+
+      await createChat();
+
+    }
+
+    init();
 
   }, []);
 
@@ -76,6 +82,8 @@ export default function ChatPage() {
 
       setMessages([]);
 
+      return data.session.id;
+
     }
 
     catch (error) {
@@ -83,6 +91,8 @@ export default function ChatPage() {
       console.error(error);
 
       toast.error("Unable to create chat.");
+
+      return "";
 
     }
 
@@ -139,13 +149,23 @@ export default function ChatPage() {
     }
 
   }
-    // --------------------------
+  // --------------------------
   // Send Message
   // --------------------------
 
   async function sendMessage() {
 
     if (!prompt.trim()) return;
+
+    let currentSession = sessionId;
+
+    if (!currentSession) {
+
+      currentSession = await createChat();
+
+      if (!currentSession) return;
+
+    }
 
     const question = prompt;
 
@@ -183,7 +203,7 @@ export default function ChatPage() {
 
           body: JSON.stringify({
 
-            session_id: sessionId,
+            session_id: currentSession,
 
             question,
 

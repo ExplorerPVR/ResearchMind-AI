@@ -62,8 +62,20 @@ class ChatHistoryService:
         print(f"Loading session: {path}")
 
         if not path.exists():
-            raise Exception("Chat session not found.")
 
+            data = {
+                "id": session_id,
+                "title": "New Chat",
+                "messages": [],
+            }
+
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(
+                    data,
+                    f,
+                    indent=4,
+                    ensure_ascii=False,
+                )
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
 

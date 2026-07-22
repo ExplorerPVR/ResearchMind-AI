@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Search, Bell, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -7,11 +8,17 @@ export default function Navbar() {
 
     const { theme, setTheme } = useTheme();
 
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     return (
 
-        <header className="sticky top-0 z-50 backdrop-blur-xl bg-background/80 border-b">
+        <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-xl">
 
-            <div className="h-20 px-8 flex items-center justify-between">
+            <div className="flex h-20 items-center justify-between px-8">
 
                 {/* Left */}
 
@@ -27,7 +34,7 @@ export default function Navbar() {
 
                 {/* Center */}
 
-                <div className="hidden lg:flex w-[420px]">
+                <div className="hidden w-[420px] lg:flex">
 
                     <div className="relative w-full">
 
@@ -38,7 +45,7 @@ export default function Navbar() {
 
                         <input
                             placeholder="Search papers..."
-                            className="w-full rounded-full border bg-card pl-11 pr-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-full rounded-full border bg-card py-3 pl-11 pr-4 outline-none focus:ring-2 focus:ring-indigo-500"
                         />
 
                     </div>
@@ -60,21 +67,31 @@ export default function Navbar() {
                         className="rounded-full border p-3 hover:bg-muted"
                     >
 
-                        {theme === "dark"
-                            ? <Sun size={18}/>
-                            : <Moon size={18}/>}
+                        {!mounted ? (
+
+                            <Moon size={18} />
+
+                        ) : theme === "dark" ? (
+
+                            <Sun size={18} />
+
+                        ) : (
+
+                            <Moon size={18} />
+
+                        )}
 
                     </button>
 
                     <button className="rounded-full border p-3 hover:bg-muted">
 
-                        <Bell size={18}/>
+                        <Bell size={18} />
 
                     </button>
 
                     <div className="flex items-center gap-3">
 
-                        <div className="w-11 h-11 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-indigo-600 font-bold text-white">
 
                             P
 

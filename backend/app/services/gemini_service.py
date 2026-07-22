@@ -2,7 +2,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from app.core.config import settings
 import json
 import ast
-
+import asyncio
 
 class GeminiService:
 
@@ -11,6 +11,38 @@ class GeminiService:
         google_api_key=settings.GOOGLE_API_KEY,
         temperature=settings.TEMPERATURE,
     )
+    # ----------------------------------------------------
+    # Retry Gemini Request
+    # ----------------------------------------------------
+
+    @classmethod
+    async def invoke_with_retry(cls, prompt: str):
+
+        retries = 3
+
+        delay = 2
+
+        for attempt in range(retries):
+
+            try:
+
+                return await cls.llm.ainvoke(prompt)
+
+            except Exception as e:
+
+                print(f"Gemini Attempt {attempt+1}/{retries}")
+
+                print(e)
+
+                if attempt < retries - 1:
+
+                    await asyncio.sleep(delay)
+
+                    delay *= 2
+
+                else:
+
+                    raise
 
     # ----------------------------------------------------
     # Universal Gemini Response Parser
@@ -138,7 +170,7 @@ Answer:
 
         try:
 
-            response = await cls.llm.ainvoke(prompt)
+            response = await cls.invoke_with_retry(prompt)
 
         except Exception as e:
 
@@ -190,7 +222,7 @@ Research Paper
 
         try:
 
-            response = await cls.llm.ainvoke(prompt)
+            response = await cls.invoke_with_retry(prompt)
 
         except Exception as e:
 
@@ -271,7 +303,7 @@ Research Papers
 
         try:
 
-            response = await cls.llm.ainvoke(prompt)
+            response = await cls.invoke_with_retry(prompt)
 
         except Exception as e:
 
@@ -333,7 +365,7 @@ Research Paper
 
         try:
 
-            response = await cls.llm.ainvoke(prompt)
+            response = await cls.invoke_with_retry(prompt)
 
         except Exception as e:
 
