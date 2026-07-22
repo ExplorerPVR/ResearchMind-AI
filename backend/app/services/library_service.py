@@ -68,7 +68,6 @@ class LibraryService:
                 stored_name = meta.get("stored_name")
 
         if ids_to_delete:
-
             collection.delete(ids=ids_to_delete)
 
         if stored_name:
@@ -82,3 +81,32 @@ class LibraryService:
             "success": True,
             "deleted": filename
         }
+
+    @staticmethod
+    def get_stored_filename(filename: str):
+
+        results = collection.get(include=["metadatas"])
+
+        metadatas = results.get("metadatas", [])
+
+        for meta in metadatas:
+
+            if meta.get("filename") == filename:
+                return meta.get("stored_name")
+
+        return None
+
+    @staticmethod
+    def get_pdf_path(filename: str):
+
+        stored_name = LibraryService.get_stored_filename(filename)
+
+        if not stored_name:
+            return None
+
+        pdf_path = UPLOAD_DIR / stored_name
+
+        if pdf_path.exists():
+            return pdf_path
+
+        return None

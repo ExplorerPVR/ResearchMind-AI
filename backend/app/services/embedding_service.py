@@ -14,7 +14,19 @@ class EmbeddingService:
     )
 
     @classmethod
-    def store_document(cls, page_chunks: list, filename: str):
+    def store_document(
+        cls,
+        page_chunks: list,
+        filename: str,
+        stored_name: str,
+    ):
+
+        print("🔥 NEW EMBEDDING SERVICE IS RUNNING 🔥")
+        print("=" * 60)
+        print("EmbeddingService is running")
+        print("Filename:", filename)
+        print("Stored Name:", stored_name)
+        print("=" * 60)
 
         ids = []
 
@@ -29,17 +41,21 @@ class EmbeddingService:
 
             chunk_id = str(uuid.uuid4())
 
+            metadata = {
+                "filename": filename,
+                "stored_name": stored_name,
+                "page": item["page"],
+                "document": filename,
+            }
+
+            print("Saving metadata:")
+            print(metadata)
+
             collection.add(
                 ids=[chunk_id],
                 embeddings=[vector],
                 documents=[item["text"]],
-                metadatas=[
-                    {
-                        "filename": filename,
-                        "page": item["page"],
-                        "document": filename,
-                    }
-                ]
+                metadatas=[metadata],
             )
 
             ids.append(chunk_id)

@@ -12,10 +12,14 @@ class RetrievalService:
 
         # Search ChromaDB
         results = collection.query(
-            query_embeddings=[query_embedding],
-            n_results=k,
-        )
-
+    query_embeddings=[query_embedding],
+    n_results=k,
+    include=[
+        "documents",
+        "metadatas",
+        "distances",
+    ],
+)
         chunks = []
 
         documents = results.get("documents", [[]])[0]
@@ -38,3 +42,4 @@ class RetrievalService:
             )
 
         return chunks
+    

@@ -1,3 +1,4 @@
+print("🔥 MAIN.PY LOADED 🔥")
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -8,6 +9,12 @@ from app.api.routes.health import router as health_router
 from app.api.routes.test import router as test_router
 from app.api.routes.documents import router as document_router
 from app.api.routes.chat import router as chat_router
+from app.api.routes.dashboard import router as dashboard_router
+from app.api.routes.summary import router as summary_router
+from app.api.routes.compare import router as compare_router
+from app.api.routes.citation import router as citation_router
+from app.api.routes.export import router as export_router
+from app.api.routes.converter import router as converter_router
 
 
 app = FastAPI(
@@ -40,11 +47,15 @@ app.include_router(health_router)
 app.include_router(test_router)
 app.include_router(document_router)
 app.include_router(chat_router)
-
+app.include_router(dashboard_router)
+app.include_router(summary_router)
+app.include_router(compare_router)
+app.include_router(citation_router)
+app.include_router(export_router)
+app.include_router(converter_router)
 # --------------------------
 # Root
 # --------------------------
-
 @app.get("/")
 async def root():
 

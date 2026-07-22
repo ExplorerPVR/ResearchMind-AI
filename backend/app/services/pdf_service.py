@@ -50,11 +50,16 @@ class PDFService:
         pdf.close()
 
         # Store embeddings in ChromaDB
+        print("Original filename:", file.filename)
+        print("Stored filename:", filename)
+
         ids = EmbeddingService.store_document(
-            page_chunks,
-            file.filename,
+            page_chunks=page_chunks,
+            filename=file.filename,
+            stored_name=filename,
         )
 
+        print("Embedding stored successfully")
         return {
             "stored_name": filename,
             "pages": page_count,
