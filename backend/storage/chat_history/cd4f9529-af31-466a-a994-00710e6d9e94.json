@@ -1,0 +1,20 @@
+{
+    "id": "cd4f9529-af31-466a-a994-00710e6d9e94",
+    "title": "What is AI?",
+    "messages": [
+        {
+            "role": "user",
+            "message": "What is AI?\n",
+            "sources": []
+        },
+        {
+            "role": "assistant",
+            "message": "Based on the provided context, Artificial Intelligence (AI) is the broad field of creating systems that can perform tasks requiring human intelligence. It was officially introduced at the Dartmouth Conference in 1956.",
+            "sources": [
+                "AI.pdf (Page 1)",
+                "ML.pdf (Page 1)",
+                "DL.pdf (Page 1)"
+            ]
+        }
+    ]
+}

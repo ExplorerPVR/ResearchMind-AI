@@ -18,6 +18,7 @@ interface Source {
 }
 
 interface Message {
+  id: string;
   role: "user" | "assistant";
   message: string;
   sources?: Source[];
@@ -34,8 +35,7 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(false);
 
   const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
+    useEffect(() => {
 
     createChat();
 
@@ -60,18 +60,17 @@ export default function ChatPage() {
     try {
 
       const response = await fetch(
-
         "http://127.0.0.1:8000/chat/new",
-
         {
-
           method: "POST",
-
         }
-
       );
 
       const data = await response.json();
+
+      if (!data.success) {
+        throw new Error("Unable to create session");
+      }
 
       setSessionId(data.session.id);
 
@@ -79,7 +78,9 @@ export default function ChatPage() {
 
     }
 
-    catch {
+    catch (error) {
+
+      console.error(error);
 
       toast.error("Unable to create chat.");
 
@@ -96,28 +97,49 @@ export default function ChatPage() {
     try {
 
       const response = await fetch(
-
         `http://127.0.0.1:8000/chat/${id}`
-
       );
 
       const data = await response.json();
 
+      if (!data.success) {
+        throw new Error("Unable to load chat");
+      }
+
       setSessionId(id);
 
-      setMessages(data.session.messages || []);
+      setMessages(
+
+        (data.session.messages || []).map(
+
+          (msg: any, index: number) => ({
+
+            id: msg.id ?? crypto.randomUUID(),
+
+            role: msg.role,
+
+            message: msg.message,
+
+            sources: msg.sources || [],
+
+          })
+
+        )
+
+      );
 
     }
 
-    catch {
+    catch (error) {
+
+      console.error(error);
 
       toast.error("Unable to load chat.");
 
     }
 
   }
-
-  // --------------------------
+    // --------------------------
   // Send Message
   // --------------------------
 
@@ -125,17 +147,19 @@ export default function ChatPage() {
 
     if (!prompt.trim()) return;
 
+    const question = prompt;
+
     const userMessage: Message = {
+
+      id: crypto.randomUUID(),
 
       role: "user",
 
-      message: prompt,
+      message: question,
 
     };
 
     setMessages((old) => [...old, userMessage]);
-
-    const question = prompt;
 
     setPrompt("");
 
@@ -171,21 +195,43 @@ export default function ChatPage() {
 
       const data = await response.json();
 
+      if (!response.ok || data.success === false) {
+
+        throw new Error(data.message || "Chat failed");
+
+      }
+
       const aiMessage: Message = {
+
+        id: crypto.randomUUID(),
 
         role: "assistant",
 
         message: data.answer,
 
-        sources: (data.sources || []).map(
+        sources: (data.sources || []).map((source: any) => {
 
-          (file: string) => ({
+          if (typeof source === "string") {
 
-            filename: file,
+            return {
 
-          })
+              filename: source,
 
-        ),
+              page: 1,
+
+            };
+
+          }
+
+          return {
+
+            filename: source.filename,
+
+            page: source.page,
+
+          };
+
+        }),
 
       };
 
@@ -193,17 +239,22 @@ export default function ChatPage() {
 
     }
 
-    catch {
+    catch (error) {
+
+      console.error(error);
 
       toast.error("AI Server unavailable.");
 
     }
 
-    setLoading(false);
+    finally {
+
+      setLoading(false);
+
+    }
 
   }
-
-  return (
+    return (
 
     <div className="space-y-10">
 
@@ -237,9 +288,9 @@ export default function ChatPage() {
 
           <div className="space-y-8 mt-8">
 
-            {messages.map((msg, index) => (
+            {messages.map((msg) => (
 
-              <div key={index}>
+              <div key={msg.id}>
 
                 <ChatBubble
 
@@ -249,19 +300,17 @@ export default function ChatPage() {
 
                 />
 
-                {msg.role === "assistant"
-
-                  && msg.sources
-
-                  && msg.sources.length > 0 && (
+                {msg.role === "assistant" &&
+                  msg.sources &&
+                  msg.sources.length > 0 && (
 
                   <div className="grid md:grid-cols-2 gap-4 mt-5">
 
-                    {msg.sources.map((source) => (
+                    {msg.sources.map((source, index) => (
 
                       <SourceCard
 
-                        key={source.filename}
+                        key={`${source.filename}-${source.page ?? 1}-${index}`}
 
                         filename={source.filename}
 
